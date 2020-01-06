@@ -5,6 +5,7 @@
 
 import React from 'react';
 import _ from 'lodash';
+import AppIcon from 'AppIcon';
 import Label from 'Label';
 import Markdown from 'react-native-markdown-renderer';
 import PropTypes from 'prop-types';
@@ -32,6 +33,12 @@ export default class SkillzNewsMessageCell extends React.PureComponent {
 
 
   _renderMessageHeaderIcon(): React.Element<*> {
+    if (this.props.newsArticle.game_specific) {
+      return (
+        <AppIcon style={styles.headerAppIcon}/>
+      );
+    }
+
     return (
       <SkillzImage source={'skillz_app_icon.png'}
                    style={styles.headerIcon}/>

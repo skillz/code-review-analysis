@@ -9,6 +9,7 @@ export class SkillzNewsMessageInterface {
   id:                           number;
   message:                      string;
   title:                        string;
+  game_specific:               boolean;
   start_date:                   string;
   image_url:                    string;
 }
