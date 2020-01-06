@@ -9,6 +9,8 @@ import Label from 'Label';
 import Markdown from 'react-native-markdown-renderer';
 import PropTypes from 'prop-types';
 import styles from 'SkillzNewsMessageCellStyles';
+import DeepLinkUtils from 'DeepLinkUtils';
+import PushButton from 'PushButton';
 
 import {
   Image,
@@ -19,6 +21,15 @@ export default class SkillzNewsMessageCell extends React.PureComponent {
   static propTypes = {
     newsArticle: PropTypes.object.isRequired,
   }
+
+  constructor(props: any) {
+    super(props);
+
+    this.state = {
+      newsArticle: this.props.newsArticle,
+    };
+  }
+
 
   _renderMessageHeaderIcon(): React.Element<*> {
     return (
@@ -36,6 +47,16 @@ export default class SkillzNewsMessageCell extends React.PureComponent {
         </Label>
       </View>
     );
+  }
+
+  _shouldRenderPlayButton(): boolean {
+    return this.state.newsArticle.deep_link.length> 0;
+  }
+
+  _footerButtonOnPress = () => {
+    console.log('It works!');
+    const deepLink = this.state.newsArticle.deep_link;
+    DeepLinkUtils.handleDeeplink(deepLink);
   }
 
   _renderBody(): React.Element<*> {
@@ -58,7 +79,23 @@ export default class SkillzNewsMessageCell extends React.PureComponent {
       <View style={styles.containerView}>
         {this._renderHeader()}
         {this._renderBody()}
-      </View>
+        {() => {
+          if (!this._shouldRenderPlayButton()) {
+            return null;
+          }
+          
+          return (
+            <View style={styles.footerView}>
+              <PushButton onPress={this._footerButtonOnPress}
+                          title={this.state.newsArticle.deep_link_text.toUpperCase()}
+                          style={styles.playButton}
+                          textStyle={styles.playButtonText}
+                          colors={SkillzStyle.fullStyles.btnGradientOne}
+                          cornerRadius={SkillzStyle.fullStyles.viewCornerRadiusSecondary.borderRadius}/>
+            </View>
+          )
+        }}
+        </View>
     );
   }
 }
