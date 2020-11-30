@@ -5,10 +5,13 @@
 
 import React from 'react';
 import _ from 'lodash';
+import AppIcon from 'AppIcon';
 import Label from 'Label';
 import Markdown from 'react-native-markdown-renderer';
 import PropTypes from 'prop-types';
 import styles from 'SkillzNewsMessageCellStyles';
+import DeepLinkUtils from 'DeepLinkUtils';
+import PushButton from 'PushButton';
 
 import {
   Image,
@@ -20,7 +23,22 @@ export default class SkillzNewsMessageCell extends React.PureComponent {
     newsArticle: PropTypes.object.isRequired,
   }
 
+  constructor(props: any) {
+    super(props);
+
+    this.state = {
+      newsArticle: this.props.newsArticle,
+    };
+  }
+
+
   _renderMessageHeaderIcon(): React.Element<*> {
+    if (this.props.newsArticle.game_specific) {
+      return (
+        <AppIcon style={styles.headerAppIcon}/>
+      );
+    }
+
     return (
       <SkillzImage source={'skillz_app_icon.png'}
                    style={styles.headerIcon}/>
@@ -36,6 +54,16 @@ export default class SkillzNewsMessageCell extends React.PureComponent {
         </Label>
       </View>
     );
+  }
+
+  _shouldRenderPlayButton(): boolean {
+    return this.state.newsArticle.deep_link.length> 0;
+  }
+
+  _footerButtonOnPress = () => {
+    console.log('It works!');
+    const deepLink = this.state.newsArticle.deep_link;
+    DeepLinkUtils.handleDeeplink(deepLink);
   }
 
   _renderBody(): React.Element<*> {
@@ -58,7 +86,23 @@ export default class SkillzNewsMessageCell extends React.PureComponent {
       <View style={styles.containerView}>
         {this._renderHeader()}
         {this._renderBody()}
-      </View>
+        {() => {
+          if (!this._shouldRenderPlayButton()) {
+            return null;
+          }
+          
+          return (
+            <View style={styles.footerView}>
+              <PushButton onPress={this._footerButtonOnPress}
+                          title={this.state.newsArticle.deep_link_text.toUpperCase()}
+                          style={styles.playButton}
+                          textStyle={styles.playButtonText}
+                          colors={SkillzStyle.fullStyles.btnGradientOne}
+                          cornerRadius={SkillzStyle.fullStyles.viewCornerRadiusSecondary.borderRadius}/>
+            </View>
+          )
+        }}
+        </View>
     );
   }
 }
